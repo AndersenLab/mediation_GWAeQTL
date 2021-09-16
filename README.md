@@ -17,8 +17,8 @@ nextflow mediation_GWAeQTL.nf --cegwas2dir = <path to cegwas2-nf result folder> 
 
 1. [nextflow-v19.07.0](https://www.nextflow.io/docs/latest/getstarted.html)
 2. [R-tidyverse-v1.2.1](https://www.tidyverse.org/)
-3. [mediation-v4.5.0](https://github.com/kosukeimai/mediation)
-4. [MultiMed-v2.4.0](https://github.com/SiminaB/MultiMed)
+3. [R-mediation-v4.5.0](https://github.com/kosukeimai/mediation)
+4. [R-MultiMed-v2.4.0](https://github.com/SiminaB/MultiMed)
 
 
 
