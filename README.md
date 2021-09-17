@@ -19,6 +19,7 @@ nextflow mediation_GWAeQTL.nf --cegwas2dir = <path to cegwas2-nf result folder> 
 2. [R-tidyverse-v1.2.1](https://www.tidyverse.org/)
 3. [R-mediation-v4.5.0](https://github.com/kosukeimai/mediation)
 4. [R-MultiMed-v2.4.0](https://github.com/SiminaB/MultiMed)
+5. [R-data.table-1.12.8](https://cran.r-project.org/web/packages/data.table/index.html)
 
 
 
