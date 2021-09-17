@@ -8,7 +8,8 @@
 date = new Date().format( 'yyyyMMdd' )
 
 params.traitfile = null
-params.cegwas2dir = null
+params.gwa = null
+params.gwa_dir = null
 
 params.transcripteQTL = "${workflow.projectDir}/bin/eQTL6545forMed.tsv"
 params.transcript_exp = "${workflow.projectDir}/bin/tx5291exp_st207.tsv"
@@ -24,7 +25,7 @@ params.fix_names = "fix"
 ~ ~ ~ > * OUTPUT DIRECTORY 
 */
 
-params.out = "${params.cegwas2dir}/mediation-${date}"
+params.out = "${params.gwa_dir}/mediation-${date}"
 
 
 
@@ -39,41 +40,14 @@ log.info ""
 
 log.info ""
 log.info "Result Directory                        = ${params.out}"
-log.info "cegwas2-nf result directory             = ${params.cegwas2dir}"
+log.info "GWA mapping pipeline                    = ${params.gwa}"
+log.info "GWA mapping result directory            = ${params.gwa_dir}"
 log.info "eQTL                                    = ${params.transcripteQTL}"
 log.info "Input expression data of eQTL calling   = ${params.transcript_exp}"
 log.info ""
 
 
 
-
-
-/*
-~ ~ ~ > * target trait QTL_peaks 
-*/
-
-
-
-params.qpeak = "${params.cegwas2dir}/Mappings/Data/QTL_peaks.tsv"
-
-Channel
-	.fromPath("${params.qpeak}")
-	.splitCsv(sep: '\t', skip: 1)
-   	.into{peaks; 
-   		  mediate_peaks}
- 
-
-
-/*
-~ ~ ~ > * genome matrix used in mapping of target traits
-*/
-
-params.genoMatri = "${params.cegwas2dir}/Genotype_Matrix/Genotype_Matrix.tsv"
-
-Channel
-	.fromPath("${params.genoMatri}")
-	.into{ 	med_gm; 
-			med_gm2}
 
 
 
@@ -109,11 +83,21 @@ Channel
 
 
 /*
-~ ~ ~ > * INITIATE PHENOTYPE CHANNEL - GENERATES A [trait_name, trait_file] TUPLE
+~ ~ ~ > * genome matrix used in mapping of target traits
 */
 
-
  
+
+params.genoMatri = "${params.gwa_dir}/Genotype_Matrix/Genotype_Matrix.tsv"
+
+Channel
+	.fromPath("${params.genoMatri}")
+	.into{ 	med_gm; 
+			med_gm2}
+
+
+
+
 
 
 
@@ -126,8 +110,36 @@ Channel
 
 
 
+/*
+~ ~ ~ > * target trait QTL_peaks 
+*/
+
+
+if("${params.gwa}" == "cegwas2nf") {
+
+
+
+
+params.qpeak = "${params.gwa_dir}/Mappings/Data/QTL_peaks.tsv"
+
+Channel
+	.fromPath("${params.qpeak}")
+	.splitCsv(sep: '\t', skip: 1)
+   	.into{peaks; 
+   		  mediate_peaks}
+
+
+
+
+
+/*
+~ ~ ~ > * INITIATE PHENOTYPE CHANNEL - GENERATES A [trait_name, trait_file] TUPLE
+*/
+
 
 process fix_strain_names_bulk {
+
+ 
 
 	executor 'local'
 
@@ -154,7 +166,63 @@ process fix_strain_names_bulk {
 
 
 
+} else { 
 
+
+params.qpeak = "${params.gwa_dir}/Mapping/Processed/QTL_peaks.tsv"
+
+Channel
+	.fromPath("${params.qpeak}")
+	.splitCsv(sep: '\t', skip: 1)
+	.map { tch,logPvalue,TRAIT,tstart,tpeak,tend,var_exp,h2 -> [TRAIT,tch,tstart,tpeak,tend,logPvalue,var_exp,h2] }
+   	.into{peaks; 
+   		  mediate_peaks}
+
+
+
+
+
+
+/*
+~ ~ ~ > * INITIATE PHENOTYPE CHANNEL - GENERATES A [trait_name, trait_file] TUPLE
+*/
+
+
+process fix_strain_names_alt {
+
+ 
+
+
+	executor 'local'
+
+	tag {"BULK TRAIT"}
+
+	input:
+
+		file(phenotypes) from traits_to_strainlist
+
+	output:
+
+		file("pr_*.tsv") into fixed_strain_phenotypes
+
+	"""
+
+	Rscript --vanilla `which Fix_Isotype_names_bulk_nemascan.R` ${phenotypes} ${params.fix_names} "${workflow.projectDir}/bin/strain_isotype_lookup.tsv"
+
+
+	"""
+
+}
+
+
+
+
+ 
+
+}
+
+
+ 
 
 
 
