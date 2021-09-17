@@ -98,6 +98,10 @@ Channel
 
 
 
+/*
+~ ~ ~ > * INITIATE PHENOTYPE CHANNEL  
+*/
+
 
 
 
@@ -110,13 +114,15 @@ Channel
 
 
 
-/*
-~ ~ ~ > * target trait QTL_peaks 
-*/
 
 
 if("${params.gwa}" == "cegwas2nf") {
 
+
+
+/*
+~ ~ ~ > * target trait QTL_peaks 
+*/
 
 
 
@@ -133,7 +139,7 @@ Channel
 
 
 /*
-~ ~ ~ > * INITIATE PHENOTYPE CHANNEL - GENERATES A [trait_name, trait_file] TUPLE
+~ ~ ~ > * GENERATES A [trait_name, trait_file] TUPLE
 */
 
 
@@ -166,7 +172,13 @@ process fix_strain_names_bulk {
 
 
 
-} else { 
+} else if("${params.gwa}" == "nemascan"){ 
+
+
+/*
+~ ~ ~ > * target trait QTL_peaks 
+*/
+
 
 
 params.qpeak = "${params.gwa_dir}/Mapping/Processed/QTL_peaks.tsv"
@@ -184,11 +196,11 @@ Channel
 
 
 /*
-~ ~ ~ > * INITIATE PHENOTYPE CHANNEL - GENERATES A [trait_name, trait_file] TUPLE
+~ ~ ~ > * GENERATES A [trait_name, trait_file] TUPLE
 */
 
 
-process fix_strain_names_alt {
+process fix_strain_names_nemascan {
 
  
 
@@ -219,6 +231,13 @@ process fix_strain_names_alt {
 
  
 
+} else{
+	
+
+	println("ERROR. Please choose --gwa (cegwas2nf or nemascan)")
+				exit 1
+
+				
 }
 
 
