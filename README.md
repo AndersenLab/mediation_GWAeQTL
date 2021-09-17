@@ -8,7 +8,7 @@ git clone https://github.com/AndersenLab/mediation_GWAeQTL.git
 
 cd mediation_GWAeQTL
 
-nextflow mediation_GWAeQTL.nf --gwa=<cegwas2nf or nemascan> --gwa_dir = <path to cegwas2-nf result folder> --traitfile = <path to cegwas2-nf traitfile> 
+nextflow mediation_GWAeQTL.nf --gwa=<cegwas2nf or nemascan> --gwa_dir = <path to GWA result folder> --traitfile = <path to GWA traitfile> 
 
 ```
 
