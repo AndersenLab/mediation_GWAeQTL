@@ -136,8 +136,6 @@ Channel
 
 
 
-
-
 /*
 ~ ~ ~ > * GENERATES A [trait_name, trait_file] TUPLE
 */
@@ -287,7 +285,7 @@ process mediation_data {
 
 	input:
 
-		set val(TRAIT),val(tch),val(tstart),val(tpeak),val(tend),val(logPvalue), val(var_exp), val(h2), file(t_file) from medQTL_peaks
+		set val(TRAIT),val(tch),val(tstart),val(tpeak),val(tend),file(t_file),val(logPvalue), val(var_exp), val(h2) from medQTL_peaks
 
 	output:
 
@@ -363,15 +361,15 @@ process multi_mediation {
 
 
 
-/*
-=====================================
-~ > *                           * < ~
-~ ~ > *                       * < ~ ~
-~ ~ ~ > *    Mediation      * < ~ ~ ~
-~ ~ > *                       * < ~ ~
-~ > *                           * < ~
-=====================================
-*/
+
+// =====================================
+// ~ > *                           * < ~
+// ~ ~ > *                       * < ~ ~
+// ~ ~ ~ > *    Mediation      * < ~ ~ ~
+// ~ ~ > *                       * < ~ ~
+// ~ > *                           * < ~
+// =====================================
+
 
 
 
@@ -437,17 +435,17 @@ process simple_mediation {
 
 
 
-peaks
-.map {TRAIT,tch,tstart,tpeak,tend,logPvalue,var_exp,h2 -> TRAIT}
-.unique()
-.set{traits_list}
+// peaks
+//  .map {TRAIT,tch,tstart,tpeak,tend,logPvalue,var_exp,h2 -> TRAIT}.view()
+// .unique()
+// .set{traits_list}
 
 
 
 
 process summary_mediation {
 
-	cpus 4
+	cpus 2
 	memory '32 GB'
 
 	publishDir "${params.out}/mediation/file_summary", mode: 'copy', pattern: "*mediation.tsv"
@@ -455,7 +453,7 @@ process summary_mediation {
 	publishDir "${params.out}/mediation/plot_summary", mode: 'copy', pattern: "*plot.png"
 
 	input:
-	 val(TRAIT) from traits_list
+	 set val(TRAIT), val(tch), val(tstart), val(tpeak), val(tend), val(logPvalue), val(var_exp), val(h2) from peaks
 	 file(indimed) from result_mediate.collect()
 	 file(multimed) from result_multi_mediate.collect()
 
@@ -478,10 +476,4 @@ process summary_mediation {
 }
 
 
-
-
-
-
-
-
- 
+  
