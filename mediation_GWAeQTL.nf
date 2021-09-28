@@ -159,7 +159,7 @@ process fix_strain_names_bulk {
 
 	"""
 
-	Rscript --vanilla `which Fix_Isotype_names_bulk.R` ${phenotypes} ${params.fix_names} "${workflow.projectDir}/bin/strain_isotype_lookup.tsv"
+	Rscript --vanilla "${workflow.projectDir}/bin/Fix_Isotype_names_bulk.R" ${phenotypes} ${params.fix_names} "${workflow.projectDir}/bin/strain_isotype_lookup.tsv"
 
 
 	"""
@@ -217,7 +217,7 @@ process fix_strain_names_nemascan {
 
 	"""
 
-	Rscript --vanilla `which Fix_Isotype_names_bulk_nemascan.R` ${phenotypes} ${params.fix_names} "${workflow.projectDir}/bin/strain_isotype_lookup.tsv"
+	Rscript --vanilla "${workflow.projectDir}/bin/Fix_Isotype_names_bulk_nemascan.R" ${phenotypes} ${params.fix_names} "${workflow.projectDir}/bin/strain_isotype_lookup.tsv"
 
 
 	"""
@@ -296,7 +296,7 @@ process mediation_data {
 	"""
 
 
-    Rscript --vanilla `which mediaton_input.R` ${TRAIT} ${t_file} ${tch} ${tstart} ${tend} ${tpeak} ${transcript_eqtl}
+    Rscript --vanilla "${workflow.projectDir}/bin/mediaton_input.R" ${TRAIT} ${t_file} ${tch} ${tstart} ${tend} ${tpeak} ${transcript_eqtl}
 
 
 	"""
@@ -350,7 +350,7 @@ process multi_mediation {
 
 	"""
 
-    Rscript --vanilla `which multi_mediation.R` ${geno} ${texpression} ${pheno} ${tch} ${tpeak} ${TRAIT} ${tr_eqtl}
+    Rscript --vanilla "${workflow.projectDir}/bin/multi_mediation.R" ${geno} ${texpression} ${pheno} ${tch} ${tpeak} ${TRAIT} ${tr_eqtl}
 
 	"""
 }
@@ -410,7 +410,7 @@ process simple_mediation {
 
 	"""
 
-    Rscript --vanilla `which simple_mediation.R` ${gene} ${geno} ${expression} ${pheno} ${tch} ${tpeak} ${TRAIT} ${tr_eqtl}
+    Rscript --vanilla "${workflow.projectDir}/bin/simple_mediation.R" ${gene} ${geno} ${expression} ${pheno} ${tch} ${tpeak} ${TRAIT} ${tr_eqtl}
 
 	"""
 }
@@ -469,11 +469,10 @@ process summary_mediation {
  
 	cat ${TRAIT}_*med.tsv  > ${TRAIT}_indiv_mediation_analysis.tsv
  
-	Rscript --vanilla `which summary_mediation.R` ${TRAIT}_multi_mediation_analysis.tsv ${TRAIT}_indiv_mediation_analysis.tsv ${TRAIT}
+	Rscript --vanilla "${workflow.projectDir}/bin/summary_mediation.R" ${TRAIT}_multi_mediation_analysis.tsv ${TRAIT}_indiv_mediation_analysis.tsv ${TRAIT}
 
  
 	"""
 }
 
 
-  
