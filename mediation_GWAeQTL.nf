@@ -285,7 +285,7 @@ process mediation_data {
 
 	input:
 
-		set val(TRAIT),val(tch),val(tstart),val(tpeak),val(tend),file(t_file),val(logPvalue), val(var_exp), val(h2) from medQTL_peaks
+		set val(TRAIT),val(tch),val(tstart),val(tpeak),val(tend),val(logPvalue), val(var_exp), val(h2), file(t_file) from medQTL_peaks
 
 	output:
 
