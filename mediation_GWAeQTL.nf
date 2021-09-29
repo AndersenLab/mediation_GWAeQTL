@@ -7,7 +7,7 @@
 
 date = new Date().format( 'yyyyMMdd' )
 
-params.traitfile = null
+
 params.gwa = null
 params.gwa_dir = null
 
