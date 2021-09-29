@@ -136,39 +136,6 @@ Channel
 
 
 
-/*
-~ ~ ~ > * GENERATES A [trait_name, trait_file] TUPLE
-*/
-
-
-process fix_strain_names_bulk {
-
- 
-
-	executor 'local'
-
-	tag {"BULK TRAIT"}
-
-	input:
-
-		file(phenotypes) from traits_to_strainlist
-
-	output:
-
-		file("pr_*.tsv") into fixed_strain_phenotypes
-
-	"""
-
-	Rscript --vanilla "${workflow.projectDir}/bin/Fix_Isotype_names_bulk.R" ${phenotypes} ${params.fix_names} "${workflow.projectDir}/bin/strain_isotype_lookup.tsv"
-
-
-	"""
-
-}
-
-
-
-
 
 } else if("${params.gwa}" == "nemascan"){ 
 
@@ -190,45 +157,6 @@ Channel
 
 
 
-
-
-
-/*
-~ ~ ~ > * GENERATES A [trait_name, trait_file] TUPLE
-*/
-
-
-process fix_strain_names_nemascan {
-
- 
-
-
-	executor 'local'
-
-	tag {"BULK TRAIT"}
-
-	input:
-
-		file(phenotypes) from traits_to_strainlist
-
-	output:
-
-		file("pr_*.tsv") into fixed_strain_phenotypes
-
-	"""
-
-	Rscript --vanilla "${workflow.projectDir}/bin/Fix_Isotype_names_bulk_nemascan.R" ${phenotypes} ${params.fix_names} "${workflow.projectDir}/bin/strain_isotype_lookup.tsv"
-
-
-	"""
-
-}
-
-
-
-
- 
-
 } else{
 	
 
@@ -239,12 +167,9 @@ process fix_strain_names_nemascan {
 }
 
 
- 
 
 
-
-fixed_strain_phenotypes
-    .flatten()
+Channel.fromPath("${params.gwa_dir}/Phenotypes/pr*")
     .map { file -> tuple(file.baseName.replaceAll(/pr_/,""), file) }
 	.set{traits_to_mediate}
 
