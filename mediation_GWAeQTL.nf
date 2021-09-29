@@ -137,41 +137,6 @@ Channel
 
 
 
-
-/*
-~ ~ ~ > * GENERATES A [trait_name, trait_file] TUPLE
-*/
-
-
-process fix_strain_names_bulk {
-
- 
-
-	executor 'local'
-
-	tag {"BULK TRAIT"}
-
-	input:
-
-		file(phenotypes) from traits_to_strainlist
-
-	output:
-
-		file("pr_*.tsv") into fixed_strain_phenotypes
-
-	"""
-
-	Rscript --vanilla `which Fix_Isotype_names_bulk.R` ${phenotypes} ${params.fix_names} "${workflow.projectDir}/bin/strain_isotype_lookup.tsv"
-
-
-	"""
-
-}
-
-
-
-
-
 } else if("${params.gwa}" == "nemascan"){ 
 
 
@@ -192,45 +157,6 @@ Channel
 
 
 
-
-
-
-/*
-~ ~ ~ > * GENERATES A [trait_name, trait_file] TUPLE
-*/
-
-
-process fix_strain_names_nemascan {
-
- 
-
-
-	executor 'local'
-
-	tag {"BULK TRAIT"}
-
-	input:
-
-		file(phenotypes) from traits_to_strainlist
-
-	output:
-
-		file("pr_*.tsv") into fixed_strain_phenotypes
-
-	"""
-
-	Rscript --vanilla `which Fix_Isotype_names_bulk_nemascan.R` ${phenotypes} ${params.fix_names} "${workflow.projectDir}/bin/strain_isotype_lookup.tsv"
-
-
-	"""
-
-}
-
-
-
-
- 
-
 } else{
 	
 
@@ -241,12 +167,9 @@ process fix_strain_names_nemascan {
 }
 
 
- 
 
 
-
-fixed_strain_phenotypes
-    .flatten()
+Channel.fromPath("${params.gwa_dir}/Phenotypes/pr*")
     .map { file -> tuple(file.baseName.replaceAll(/pr_/,""), file) }
 	.set{traits_to_mediate}
 
@@ -298,7 +221,7 @@ process mediation_data {
 	"""
 
 
-    Rscript --vanilla `which mediaton_input.R` ${TRAIT} ${t_file} ${tch} ${tstart} ${tend} ${tpeak} ${transcript_eqtl}
+    Rscript --vanilla "${workflow.projectDir}/bin/mediaton_input.R" ${TRAIT} ${t_file} ${tch} ${tstart} ${tend} ${tpeak} ${transcript_eqtl}
 
 
 	"""
@@ -352,7 +275,7 @@ process multi_mediation {
 
 	"""
 
-    Rscript --vanilla `which multi_mediation.R` ${geno} ${texpression} ${pheno} ${tch} ${tpeak} ${TRAIT} ${tr_eqtl}
+    Rscript --vanilla "${workflow.projectDir}/bin/multi_mediation.R" ${geno} ${texpression} ${pheno} ${tch} ${tpeak} ${TRAIT} ${tr_eqtl}
 
 	"""
 }
@@ -363,15 +286,15 @@ process multi_mediation {
 
 
 
-/*
-=====================================
-~ > *                           * < ~
-~ ~ > *                       * < ~ ~
-~ ~ ~ > *    Mediation      * < ~ ~ ~
-~ ~ > *                       * < ~ ~
-~ > *                           * < ~
-=====================================
-*/
+
+// =====================================
+// ~ > *                           * < ~
+// ~ ~ > *                       * < ~ ~
+// ~ ~ ~ > *    Mediation      * < ~ ~ ~
+// ~ ~ > *                       * < ~ ~
+// ~ > *                           * < ~
+// =====================================
+
 
 
 
@@ -412,7 +335,7 @@ process simple_mediation {
 
 	"""
 
-    Rscript --vanilla `which simple_mediation.R` ${gene} ${geno} ${expression} ${pheno} ${tch} ${tpeak} ${TRAIT} ${tr_eqtl}
+    Rscript --vanilla "${workflow.projectDir}/bin/simple_mediation.R" ${gene} ${geno} ${expression} ${pheno} ${tch} ${tpeak} ${TRAIT} ${tr_eqtl}
 
 	"""
 }
@@ -437,17 +360,17 @@ process simple_mediation {
 
 
 
-peaks
-.map {TRAIT,tch,tstart,tpeak,tend,logPvalue,var_exp,h2 -> TRAIT}
-.unique()
-.set{traits_list}
+// peaks
+//  .map {TRAIT,tch,tstart,tpeak,tend,logPvalue,var_exp,h2 -> TRAIT}.view()
+// .unique()
+// .set{traits_list}
 
 
 
 
 process summary_mediation {
 
-	cpus 4
+	cpus 2
 	memory '32 GB'
 
 	publishDir "${params.out}/mediation/file_summary", mode: 'copy', pattern: "*mediation.tsv"
@@ -455,7 +378,7 @@ process summary_mediation {
 	publishDir "${params.out}/mediation/plot_summary", mode: 'copy', pattern: "*plot.png"
 
 	input:
-	 val(TRAIT) from traits_list
+	 set val(TRAIT), val(tch), val(tstart), val(tpeak), val(tend), val(logPvalue), val(var_exp), val(h2) from peaks
 	 file(indimed) from result_mediate.collect()
 	 file(multimed) from result_multi_mediate.collect()
 
@@ -471,17 +394,10 @@ process summary_mediation {
  
 	cat ${TRAIT}_*med.tsv  > ${TRAIT}_indiv_mediation_analysis.tsv
  
-	Rscript --vanilla `which summary_mediation.R` ${TRAIT}_multi_mediation_analysis.tsv ${TRAIT}_indiv_mediation_analysis.tsv ${TRAIT}
+	Rscript --vanilla "${workflow.projectDir}/bin/summary_mediation.R" ${TRAIT}_multi_mediation_analysis.tsv ${TRAIT}_indiv_mediation_analysis.tsv ${TRAIT}
 
  
 	"""
 }
 
 
-
-
-
-
-
-
- 
