@@ -98,21 +98,6 @@ Channel
 
 
 
-/*
-~ ~ ~ > * INITIATE PHENOTYPE CHANNEL  
-*/
-
-
-
-
-Channel
-	.fromPath("${params.traitfile}")
-	.into{ traits_to_strainlist;
-			traits_to_strainlist2 }
-
-
-
-
 
 
 
