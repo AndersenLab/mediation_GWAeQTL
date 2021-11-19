@@ -136,7 +136,7 @@ params.qpeak = "${params.gwa_dir}/Mapping/Processed/QTL_peaks.tsv"
 Channel
 	.fromPath("${params.qpeak}")
 	.splitCsv(sep: '\t', skip: 1)
-	.map { tch,marker,logPvalue,TRAIT,tstart,tpeak,tend,peak_id,h2 -> [TRAIT,tch,tstart,tpeak,tend,logPvalue,peak_id,h2,marker] }
+	.map { tch,marker,logPvalue,TRAIT,tstart,tpeak,tend,peak_id,h2 -> [TRAIT,tch,tstart,tpeak,tend,logPvalue,peak_id,h2] }
    	.into{peaks; 
    		  mediate_peaks}
 
@@ -195,7 +195,7 @@ process mediation_data {
 
 	input:
 
-		set val(TRAIT),val(tch),val(tstart),val(tpeak),val(tend),val(logPvalue), val(peak_id), val(h2), val(marker), file(t_file) from medQTL_peaks
+		set val(TRAIT),val(tch),val(tstart),val(tpeak),val(tend),val(logPvalue), val(peak_id), val(h2),file(t_file) from medQTL_peaks
 
 	output:
 
@@ -363,7 +363,7 @@ process summary_mediation {
 	publishDir "${params.out}/mediation/plot_summary", mode: 'copy', pattern: "*plot.png"
 
 	input:
-	 set val(TRAIT),val(tch),val(tstart),val(tpeak),val(tend),val(logPvalue), val(peak_id),val(h2), val(marker) from peaks
+	 set val(TRAIT),val(tch),val(tstart),val(tpeak),val(tend),val(logPvalue), val(peak_id),val(h2) from peaks
 	 file(indimed) from result_mediate.collect()
 	 file(multimed) from result_multi_mediate.collect()
 
