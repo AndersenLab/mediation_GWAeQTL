@@ -2,6 +2,8 @@
 
 A Nextflow pipeline used for mediation analysis for [cegwas2-nf](https://github.com/AndersenLab/cegwas2-nf) or [NemaScan](https://github.com/AndersenLab/NemaScan) output.
 
+Citations: https://doi.org/10.5281/zenodo.6595334,  https://doi.org/10.1038/s41467-022-31208-4
+
 ## Execution of pipeline using Nextflow
 ```
 git clone https://github.com/AndersenLab/mediation_GWAeQTL.git
